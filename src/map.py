@@ -9,12 +9,11 @@ class Map:
     @staticmethod
     def obs_boundary():
         r = 10
-        obs_boundary = [[0,0,60,20]]
         obs_boundary = [
             [0, 0, 0.01, 20],
-            [0, 2*r, 6*r, 0.01],
-            [0.01, 0, 6*r, 0.01],
-            [6*r, 0.01, 0.01, 2*r]
+            [0, 20, 60, 0.01],
+            [0.01, 0, 60, 0.01],
+            [60, 0.01, 0.01, 20]
         ]
         return obs_boundary
     

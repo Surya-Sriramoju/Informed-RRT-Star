@@ -6,12 +6,9 @@ import math
 import random
 import matplotlib.patches as patches
 from utils import Utils
-from plots import Plots
 from node import Node
 import ros_messenger
-
-
-
+import time
 
 class IRrtStar:
     def __init__(self, start_position, goal_position, step_len, sample_rate, search_radius, iter_max):
@@ -23,7 +20,6 @@ class IRrtStar:
         self.iter_max = iter_max
         self.utils = Utils()
         self.map = Map()
-        self.plots = Plots(start_position, goal_position)
         self.clearance = self.utils.clearance
 
         self.fig, self.ax = plt.subplots()
@@ -89,6 +85,13 @@ class IRrtStar:
         plt.plot([x for x, _ in self.path], [y for _, y in self.path], '-r')
         plt.pause(0.01)
         plt.show()
+        # anim = animation.FuncAnimation(self.fig, self.animation, frames=1000, 
+        #                        interval=20, blit=True)
+        # # fig.suptitle('Straight Line plot', fontsize=14)
+        
+        # # saving to m4 using ffmpeg writer
+        # writervideo = animation.FFMpegWriter(fps=60)
+        # anim.save('RRT_star.mp4', writer=writervideo)
         return self.path[::-1]
 
     def Cost(self, node):
@@ -221,7 +224,7 @@ class IRrtStar:
         for node in self.V:
             if node.parent:
                 plt.plot([node.x, node.parent.x], [
-                            node.y, node.parent.y], "-g")
+                            node.y, node.parent.y], "-b")
 
         if c_best != np.inf:
             self.draw_ellipse(x_center, c_best, dist, theta)
@@ -289,19 +292,20 @@ class IRrtStar:
 
 
 def main():
-    x_start = (5,10)  # Starting node
-    x_goal = (55,10)  # Goal node
+    x_start = (5,10)  # Starting point
+    x_goal = (32,15)  # Goal point
 
     # start_position, goal_position, step_len, sample_rate, search_radius, iter_max
-    rrt_star = IRrtStar(x_start, x_goal, 1, 0.10, 10, 1500)
+    rrt_star = IRrtStar(x_start, x_goal, 1, 0.10, 10, 2000)
+    a = time.time()
     path = rrt_star.main_algo()
-    print('Optimal Path Found:')
+    b = time.time()
+    print("Time Taken:", b-a)
+    print('Path Found:')
     print(path)
-    value = int(input("Do you want the turtlebot to move? type 1: \n"))
+    value = int(input("Do you want the turtlebot to move? type 1 to move it: \n"))
     if value == 1:
         ros_messenger.send_vel(path, radius=3.8, w_dist=35.4, step=1)
-
-
 
 if __name__ == '__main__':
     main()
